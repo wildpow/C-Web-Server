@@ -192,7 +192,12 @@ int send_response(int fd, char *header, char *content_type, char *body)
   int response_length;
 
   // !!!!  IMPLEMENT ME
-
+  sprintf(response, "%s\nDate: Wed Dec 20\nConnect: close\nContent-Length: %d\nContent-Type: %s\n\n%s",
+    header,
+    strlen(body),
+    content_type,
+    body
+  );
   // Send it all!
   int rv = send(fd, response, response_length, 0);
 
@@ -223,6 +228,7 @@ void get_root(int fd)
 {
   // !!!! IMPLEMENT ME
   //send_response(...
+  send_response(fd, "Http/1.1 200 OK", "text/html", "<h1>Hello World</h1>");
 }
 
 /**
@@ -249,6 +255,7 @@ void post_save(int fd, char *body)
   // !!!! IMPLEMENT ME
 
   // Save the body and send a response
+  printf("call unimplemented function post_save\n");
 }
 
 /**
@@ -260,6 +267,7 @@ void post_save(int fd, char *body)
 char *find_end_of_header(char *header)
 {
   // !!!! IMPLEMENT ME
+  return NULL;
 }
 
 /**
@@ -288,10 +296,15 @@ void handle_http_request(int fd)
   // !!!! IMPLEMENT ME
   // Get the request type and path from the first line
   // Hint: sscanf()!
-
+  sscanf(request, "%s %s %s", request_type, request_path, request_protocol);
   // !!!! IMPLEMENT ME (stretch goal)
   // find_end_of_header()
   // call the appropriate handler functions, above, with the incoming data
+  if(strcmp("/", request_path) == 0) {
+    get_root(fd);
+  } else {
+    resp_404(fd, request_path);
+  }
 }
 
 /**
